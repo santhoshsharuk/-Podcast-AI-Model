@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podcast AI - Create Studio-Quality Podcasts from Text in Minutes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Base Styles and Variables */
+        :root {
+            --primary: #b239ff;
+            --secondary: #FF3CAC;
+            --accent: #00d4ff;
+            --gradient-primary: linear-gradient(90deg, var(--primary), var(--secondary));
+            --gradient-glow: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --background: #080808;
+            --card-bg: rgba(30, 30, 35, 0.6);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --glow: 0 0 15px rgba(178, 57, 255, 0.5);
+            --button-radius: 6px;
+            --card-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(30, 15, 40, 0.4) 0%, rgba(8, 8, 8, 0) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: var(--button-radius);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #9c2be0;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+            border-color: rgba(178, 57, 255, 0.2);
+        }
+
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 16px 0;
+            backdrop-filter: blur(10px);
+            background: rgba(8, 8, 8, 0.8);
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 12px 0;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            background: var(--gradient-primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        nav ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        nav ul li a:hover {
+            color: var(--text);
+        }
+
+        nav ul li a.active {
+            color: var(--primary);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Enhanced Hero Styles */
+        .hero {
+            position: relative;
+            padding: 140px 0 200px;
+            overflow: hidden;
+            background-color: var(--background);
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: #b239ff;
+            margin-bottom: 32px;
+            text-transform: uppercase;
+            animation: glow-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 5px #b239ff; }
+            50% { text-shadow: 0 0 20px #b239ff, 0 0 30px #b239ff; }
+        }
+
+        .hero-title {
+            font-size: 6.5rem;
+            line-height: 1.1;
+            font-weight: 800;
+            margin-bottom: 32px;
+            letter-spacing: -0.03em;
+            animation: fade-up 1s ease-out;
+        }
+
+        .hero-title .highlight {
+            background: var(--gradient-glow);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 300% 300%;
+            animation: gradient-move 3s ease infinite;
+        }
+
+        @keyframes gradient-move {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-description {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 900px;
+            margin: 0 auto 50px;
+            animation: fade-up 1s ease-out 0.3s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 80px;
+            animation: fade-up 1s ease-out 0.6s both;
+        }
+
+        /* Moving Light Animation */
+        .moving-lights {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .light-beam {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+            animation: move-light 4s linear infinite;
+            opacity: 0.7;
+        }
+
+        .light-beam:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .light-beam:nth-child(2) {
+            left: 30%;
+            animation-delay: 1s;
+            background: linear-gradient(to bottom, transparent, var(--secondary), transparent);
+        }
+
+        .light-beam:nth-child(3) {
+            left: 50%;
+            animation-delay: 2s;
+            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+        }
+
+        .light-beam:nth-child(4) {
+            left: 70%;
+            animation-delay: 3s;
+        }
+
+        .light-beam:nth-child(5) {
+            left: 90%;
+            animation-delay: 0.5s;
+            background: linear-gradient(to bottom, transparent, var(--secondary), transparent);
+        }
+
+        @keyframes move-light {
+            0% { 
+                top: -100px; 
+                opacity: 0; 
+                transform: translateX(0); 
+            }
+            10% { 
+                opacity: 0.7; 
+            }
+            90% { 
+                opacity: 0.7; 
+            }
+            100% { 
+                top: 100vh; 
+                opacity: 0; 
+                transform: translateX(50px); 
+            }
+        }
+
+        /* Podcast Conversion Demo */
+        .conversion-demo {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+            background: rgba(30, 30, 35, 0.8);
+            border-radius: 20px;
+            border: 1px solid rgba(178, 57, 255, 0.3);
+            backdrop-filter: blur(15px);
+            animation: fade-up 1s ease-out 0.9s both;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .demo-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .demo-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .conversion-flow {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .script-input {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .script-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .script-content {
+            font-family: 'Courier New', monospace;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .speaker-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .conversion-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .arrow-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: pulse-arrow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-arrow {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .conversion-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .audio-output {
+            background: rgba(178, 57, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(178, 57, 255, 0.3);
+        }
+
+        .audio-player-demo {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .voice-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .voice-indicator.voice-2 {
+            border-left-color: var(--secondary);
+        }
+
+        .voice-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .voice-info {
+            flex: 1;
+        }
+
+        .voice-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .voice-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .play-indicator {
+            color: var(--primary);
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* Enhanced Audio Visualizer */
+        .enhanced-visualizer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            gap: 3px;
+            margin: 40px auto;
+            padding: 20px;
+            background: rgba(178, 57, 255, 0.05);
+            border-radius: 40px;
+            border: 1px solid rgba(178, 57, 255, 0.2);
+        }
+
+        .viz-bar {
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 2px;
+            animation: enhanced-wave 1.5s infinite ease-in-out;
+            box-shadow: 0 0 5px var(--primary);
+        }
+
+        .viz-bar:nth-child(even) {
+            background: var(--secondary);
+            box-shadow: 0 0 5px var(--secondary);
+        }
+
+        @keyframes enhanced-wave {
+            0%, 100% { 
+                height: 20px; 
+                opacity: 0.4;
+                transform: scaleY(1);
+            }
+            50% { 
+                height: 60px; 
+                opacity: 1;
+                transform: scaleY(1.5);
+            }
+        }
+
+        /* Stagger animation delays */
+        .viz-bar:nth-child(1) { animation-delay: 0s; }
+        .viz-bar:nth-child(2) { animation-delay: 0.1s; }
+        .viz-bar:nth-child(3) { animation-delay: 0.2s; }
+        .viz-bar:nth-child(4) { animation-delay: 0.3s; }
+        .viz-bar:nth-child(5) { animation-delay: 0.4s; }
+        .viz-bar:nth-child(6) { animation-delay: 0.5s; }
+        .viz-bar:nth-child(7) { animation-delay: 0.6s; }
+        .viz-bar:nth-child(8) { animation-delay: 0.5s; }
+        .viz-bar:nth-child(9) { animation-delay: 0.4s; }
+        .viz-bar:nth-child(10) { animation-delay: 0.3s; }
+        .viz-bar:nth-child(11) { animation-delay: 0.2s; }
+        .viz-bar:nth-child(12) { animation-delay: 0.1s; }
+        .viz-bar:nth-child(13) { animation-delay: 0s; }
+
+        /* Wave Bottom */
+        .wave-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            z-index: 1;
+            line-height: 0;
+        }
+
+        .wave-bottom svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header p {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            padding: 32px;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+            background: rgba(178, 57, 255, 0.1);
+            color: var(--primary);
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 0;
+            background: linear-gradient(180deg, rgba(8, 8, 8, 1) 0%, rgba(15, 10, 20, 0.8) 50%, rgba(8, 8, 8, 1) 100%);
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            counter-reset: step;
+        }
+
+        .step-card {
+            counter-increment: step;
+            position: relative;
+        }
+
+        .step-card::before {
+            content: counter(step);
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        /* Demo Section */
+        .demo {
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-player-container {
+            max-width: 700px;
+            margin: 60px auto 0;
+            position: relative;
+        }
+
+        .audio-player {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .play-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(178, 57, 255, 0.4);
+        }
+
+        .audio-title {
+            font-weight: 500;
+        }
+
+        .audio-timeline {
+            position: relative;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .audio-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 30%;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+
+        .audio-script {
+            margin-top: 24px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            text-align: left;
+            font-family: monospace;
+            color: var(--text-muted);
+            position: relative;
+        }
+
+        .audio-script::before {
+            content: 'Script';
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: sans-serif;
+            color: white;
+        }
+
+        /* For Whom */
+        .for-whom {
+            padding: 100px 0;
+        }
+
+        .for-whom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .for-whom-card h3 {
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 120px 0;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(8, 8, 8, 1) 0%, rgba(25, 15, 35, 0.7) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta h2 {
+            margin-bottom: 24px;
+        }
+
+        .cta p {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            font-size: 1.1rem;
+        }
+
+        .cta-button {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--background);
+            border-top: 1px solid var(--border-color);
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-info {
+            max-width: 300px;
+        }
+
+        .footer-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 16px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Marquee Animation */
+        .marquee {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            padding: 16px 0;
+            margin: 60px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+
+        .marquee-item {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 32px;
+            color: var(--text-muted);
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Terminal/Code Block */
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+            margin: 24px 0;
+            overflow-x: auto;
+        }
+
+        .code-block .prompt {
+            color: #b239ff;
+        }
+
+        .code-block .comment {
+            color: #6a9955;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 5rem;
+            }
+            
+            .conversion-flow {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .conversion-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+            
+            .hero-description br {
+                display: none;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                max-width: 300px;
+                height: 100vh;
+                background: rgba(15, 15, 18, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 80px 32px;
+                transition: right 0.3s ease;
+                z-index: 99;
+            }
+            
+            nav.active {
+                right: 0;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 24px;
+            }
+            
+            .features-grid, .steps-container, .for-whom-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .conversion-demo {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            
+            .hero {
+                padding: 100px 0 160px;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .container {
+                padding: 0 16px;
+            }
+            
+            section {
+                padding: 60px 0;
+            }
+            
+            .audio-controls {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+            
+            .footer-links {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <svg width="0" height="0" style="position: absolute">
+        <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#b239ff" />
+                <stop offset="100%" stop-color="#ff3cac" />
+            </linearGradient>
+            <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#9C42F5" />
+                <stop offset="100%" stop-color="#FF3CAC" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container header-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon">🎙️</div>
+                <span>Podcast AI</span>
+            </a>
+            <nav id="nav">
+                <ul>
+                    <li><a href="#features" class="nav-link">Features</a></li>
+                    <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="#demo" class="nav-link">Demo</a></li>
+                    <li><a href="#for-whom" class="nav-link">Use Cases</a></li>
+                </ul>
+            </nav>
+            <div class="nav-controls">
+                <a href="https://github.com/santhoshsharuk/-Podcast-AI-Model" target="_blank" class="btn btn-secondary">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <button class="mobile-menu-btn" id="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Enhanced Hero Section -->
+    <section class="hero" id="hero">
+        <!-- Moving Light Effects -->
+        <div class="moving-lights">
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+        </div>
+
+        <div class="container hero-content">
+            <div class="subtitle">AI-POWERED AUDIO GENERATION</div>
+            
+            <h1 class="hero-title">
+                Create Studio-Quality<br>
+                <span class="highlight">Podcasts</span> from Text in<br>
+                Minutes
+            </h1>
+            
+            <p class="hero-description">
+                A free, open-source tool that uses high-performance AI voice models to generate natural,<br>
+                expressive audio for your content. No cloud costs, no APIs, 100% yours.
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="https://github.com/santhoshsharuk/-Podcast-AI-Model" target="_blank" class="btn btn-primary">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+                <a href="#demo" class="btn btn-secondary">
+                    <i class="fas fa-headphones"></i> Listen to Demo
+                </a>
+            </div>
+            
+            <!-- Enhanced Podcast Conversion Demo -->
+            <div class="conversion-demo">
+                <div class="demo-header">
+                    <div class="demo-title">🎙️ Script to Podcast in Action</div>
+                    <div class="demo-subtitle">Watch how text transforms into natural conversation</div>
+                </div>
+                
+                <div class="conversion-flow">
+                    <!-- Script Input -->
+                    <div class="script-input">
+                        <div class="script-header">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Input Script</span>
+                        </div>
+                        <div class="script-content">
+                            <div><span class="speaker-label">Host:</span> Welcome to Tech Talk! Today we're discussing AI innovations.</div>
+                            <br>
+                            <div><span class="speaker-label">Guest:</span> Thanks for having me! AI is revolutionizing how we create content.</div>
+                            <br>
+                            <div><span class="speaker-label">Host:</span> Can you tell us about the latest developments?</div>
+                            <br>
+                            <div><span class="speaker-label">Guest:</span> Absolutely! Voice synthesis has become incredibly natural...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Conversion Arrow -->
+                    <div class="conversion-arrow">
+                        <div class="arrow-icon">⚡</div>
+                        <div class="conversion-text">AI Processing</div>
+                    </div>
+                    
+                    <!-- Audio Output -->
+                    <div class="audio-output">
+                        <div class="script-header">
+                            <i class="fas fa-microphone"></i>
+                            <span>Generated Podcast</span>
+                        </div>
+                        <div class="audio-player-demo">
+                            <div class="voice-indicator">
+                                <div class="voice-avatar">H</div>
+                                <div class="voice-info">
+                                    <div class="voice-name">Sarah (Host)</div>
+                                    <div class="voice-text">Professional, warm voice</div>
+                                </div>
+                                <div class="play-indicator">▶️</div>
+                            </div>
+                            <div class="voice-indicator voice-2">
+                                <div class="voice-avatar">G</div>
+                                <div class="voice-info">
+                                    <div class="voice-name">Alex (Guest)</div>
+                                    <div class="voice-text">Technical, confident voice</div>
+                                </div>
+                                <div class="play-indicator">🔊</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enhanced Audio Visualizer -->
+            <div class="enhanced-visualizer">
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+                <div class="viz-bar"></div>
+            </div>
+        </div>
+        
+        <!-- Gradient Wave Bottom -->
+        <div class="wave-bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+                <path fill="url(#wave-gradient)" fill-opacity="1" d="M0,192L48,176C96,160,192,128,288,117.3C384,107,480,117,576,144C672,171,768,213,864,213.3C960,213,1056,171,1152,154.7C1248,139,1344,149,1392,154.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Powerful Features, Ultimate Control</h2>
+                <p>Everything you need to transform text into professional audio content.</p>
+            </div>
+            <div class="features-grid">
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-wave-square"></i>
+                    </div>
+                    <h3>Studio-Quality Voice Generation</h3>
+                    <p>Leverage state-of-the-art neural networks to produce lifelike speech that captivates your audience. Perfect for narration, articles, and audiobooks.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Blazing-Fast & Offline</h3>
+                    <p>Generate audio directly on your machine. Our ONNX-optimized models ensure rapid performance without needing an internet connection or expensive cloud services.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Multiple Voices & Languages</h3>
+                    <p>Choose from a growing library of pre-trained voices and languages to find the perfect tone for your project. Easily add your own custom Piper models.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Completely Free & Open-Source</h3>
+                    <p>Licensed under MIT. Use it, modify it, and integrate it into your own applications without any restrictions. The power is in your hands.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>From Script to Sound in <span class="gradient-text">Three Simple Steps</span></h2>
+                <p>No complex setup required. Get started in minutes.</p>
+            </div>
+            <div class="steps-container">
+                <div class="card step-card">
+                    <h3>Write Your Script</h3>
+                    <p>Create a simple text file with your content. You can even add tags like (intro_music) or (transition_sound) for automatic assembly.</p>
+                    <div class="code-block">
+                        <span class="comment"># podcast_script.txt</span><br>
+                        <span class="speaker-label">Host:</span> Welcome to AI Spotlight!<br>
+                        <span class="speaker-label">Guest:</span> Thanks for having me!<br>
+                        (transition_sound)<br>
+                        <span class="speaker-label">Host:</span> Let's discuss AI...<br>
+                        (outro_music)
+                    </div>
+                </div>
+                <div class="card step-card">
+                    <h3>Choose Voices</h3>
+                    <p>Select different voice models for each speaker. Create natural conversations with distinct voices for hosts, guests, and narrators.</p>
+                    <div class="code-block">
+                        <span class="prompt">$</span> ls voices/<br>
+                        host_sarah_en.onnx<br>
+                        guest_alex_en.onnx<br>
+                        narrator_emma_en.onnx
+                    </div>
+                </div>
+                <div class="card step-card">
+                    <h3>Generate Podcast</h3>
+                    <p>Run the script and watch as your text transforms into a natural conversation between multiple speakers with perfect timing and intonation.</p>
+                    <div class="code-block">
+                        <span class="prompt">$</span> python podcast_ai.py --script conversation.txt --voices host_sarah,guest_alex<br>
+                        <span class="comment"># Generating host voice...</span><br>
+                        <span class="comment"># Generating guest voice...</span><br>
+                        <span class="comment"># Mixing conversation...</span><br>
+                        <span class="comment"># Done! Saved to podcast.mp3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <div class="section-header">
+                <h2>Hear the <span class="gradient-text">Difference</span> for Yourself</h2>
+                <p>This entire conversation was generated by Podcast AI using our multi-voice technology. Two distinct AI voices having a natural conversation.</p>
+            </div>
+            <div class="audio-player-container">
+                <div class="audio-player">
+                    <div class="audio-controls">
+                        <div class="play-button" id="play-button">
+                            <i class="fas fa-play" id="play-icon"></i>
+                        </div>
+                        <div class="audio-title">AI Tech Talk - Host & Guest Demo</div>
+                        <div class="audio-time">00:00 / 02:15</div>
+                    </div>
+                    <div class="audio-timeline">
+                        <div class="audio-progress" id="audio-progress"></div>
+                    </div>
+                </div>
+                <div class="audio-script">
+                    <span class="speaker-label">Host:</span> Welcome to Tech Talk! I'm Sarah.<br>
+                    <span class="speaker-label">Guest:</span> Hi Sarah! Great to be here. I'm Alex.<br>
+                    <span class="speaker-label">Host:</span> Today we're exploring AI voice synthesis...<br>
+                    <span class="speaker-label">Guest:</span> It's fascinating how natural these voices sound!
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee Section -->
+    <div class="marquee">
+        <div class="marquee-content">
+            <span class="marquee-item">🎙️ Multi-voice conversations</span>
+            <span class="marquee-item">🚀 Fast generation</span>
+            <span class="marquee-item">💻 100% offline</span>
+            <span class="marquee-item">🌐 Multiple languages</span>
+            <span class="marquee-item">👥 Natural dialogue</span>
+            <span class="marquee-item">⚙️ Customizable voices</span>
+            <span class="marquee-item">🎵 Sound effects support</span>
+            <span class="marquee-item">🆓 Completely free</span>
+        </div>
+        <div class="marquee-content" aria-hidden="true">
+            <span class="marquee-item">🎙️ Multi-voice conversations</span>
+            <span class="marquee-item">🚀 Fast generation</span>
+            <span class="marquee-item">💻 100% offline</span>
+            <span class="marquee-item">🌐 Multiple languages</span>
+            <span class="marquee-item">👥 Natural dialogue</span>
+            <span class="marquee-item">⚙️ Customizable voices</span>
+            <span class="marquee-item">🎵 Sound effects support</span>
+            <span class="marquee-item">🆓 Completely free</span>
+        </div>
+    </div>
+
+    <!-- For Whom Section -->
+    <section class="for-whom" id="for-whom">
+        <div class="container">
+            <div class="section-header">
+                <h2>Built for <span class="gradient-text">Creators and Developers</span></h2>
+                <p>Discover how Podcast AI fits into your workflow.</p>
+            </div>
+            <div class="for-whom-grid">
+                <div class="card for-whom-card">
+                    <h3>For Podcast Creators</h3>
+                    <p>Create engaging multi-person conversations, interviews, and discussions. Perfect for educational content, storytelling, and professional podcasts with multiple speakers.</p>
+                </div>
+                <div class="card for-whom-card">
+                    <h3>For Developers</h3>
+                    <p>Integrate powerful multi-voice generation into your applications. Build chatbots, virtual assistants, and interactive audio experiences with natural conversation flow.</p>
+                </div>
+                <div class="card for-whom-card">
+                    <h3>For Content Creators</h3>
+                    <p>Transform blog posts into dynamic conversations, create audiobook dialogues, and produce educational content with multiple perspectives and voices.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="container">
+            <h2>Ready to <span class="gradient-text">Bring Your Conversations to Life?</span></h2>
+            <p>Start creating natural, multi-voice podcasts today. Download Podcast AI and experience the future of AI-powered audio generation.</p>
+            <a href="https://github.com/santhoshsharuk/-Podcast-AI-Model" target="_blank" class="btn btn-primary cta-button">
+                <i class="fab fa-github"></i> Get Started on GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <a href="#" class="logo">
+                        <div class="logo-icon">🎙️</div>
+                        <span>Podcast AI</span>
+                    </a>
+                    <p>© 2025 Podcast AI.<br>Developed by Santhosh Sharuk.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/santhoshsharuk/-Podcast-AI-Model" target="_blank" class="social-icon">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="mailto:santhoshsharuk16@gmail.com" class="social-icon">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-icon tooltip" data-tooltip="Documentation">
+                        <i class="fas fa-book"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Licensed under the MIT License</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const nav = document.getElementById('nav');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            nav.classList.toggle('active');
+            mobileMenuBtn.innerHTML = nav.classList.contains('active') 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Close mobile menu when clicking on a nav link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                nav.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+        
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const headerOffset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Header scroll effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Active nav link highlighting
+        const sections = document.querySelectorAll('section[id]');
+        window.addEventListener('scroll', () => {
+            let scrollY = window.pageYOffset;
+            
+            sections.forEach(current => {
+                const sectionHeight = current.offsetHeight;
+                const sectionTop = current.offsetTop - 100;
+                const sectionId = current.getAttribute('id');
+                
+                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    document.querySelector('nav a[href*=' + sectionId + ']')?.classList.add('active');
+                } else {
+                    document.querySelector('nav a[href*=' + sectionId + ']')?.classList.remove('active');
+                }
+            });
+        });
+        
+        // Enhanced Audio Player Functionality
+        const playButton = document.getElementById('play-button');
+        const playIcon = document.getElementById('play-icon');
+        const audioProgress = document.getElementById('audio-progress');
+        let isPlaying = false;
+        
+        playButton.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            
+            if (isPlaying) {
+                playIcon.className = 'fas fa-pause';
+                simulateAudioProgress();
+            } else {
+                playIcon.className = 'fas fa-play';
+                clearTimeout(audioProgressTimeout);
+            }
+        });
+        
+        let audioProgressTimeout;
+        let currentProgress = 0;
+        
+        function simulateAudioProgress() {
+            if (currentProgress < 100) {
+                currentProgress += 0.4;
+                audioProgress.style.width = currentProgress + '%';
+                
+                // Update time display
+                const totalTime = 135; // 2:15 in seconds
+                const currentTime = Math.floor(totalTime * (currentProgress / 100));
+                const minutes = Math.floor(currentTime / 60);
+                const seconds = currentTime % 60;
+                document.querySelector('.audio-time').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} / 02:15`;
+                
+                audioProgressTimeout = setTimeout(simulateAudioProgress, 600);
+            } else {
+                // Reset when finished
+                currentProgress = 0;
+                isPlaying = false;
+                playIcon.className = 'fas fa-play';
+                audioProgress.style.width = '0%';
+                document.querySelector('.audio-time').textContent = '00:00 / 02:15';
+            }
+        }
+        
+        // Animate elements on scroll
+        const animateOnScroll = () => {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                const cardBottom = card.getBoundingClientRect().bottom;
+                const isVisible = (cardTop < window.innerHeight - 100) && (cardBottom > 0);
+                
+                if (isVisible) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        // Set initial styles for cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        });
+        
+        // Run animation check on load and scroll
+        window.addEventListener('load', animateOnScroll);
+        window.addEventListener('scroll', animateOnScroll);
+        
+        // Duplicate marquee content for infinite scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const marqueeContents = document.querySelectorAll('.marquee-content');
+            if (marqueeContents.length >= 2) {
+                marqueeContents[1].innerHTML = marqueeContents[0].innerHTML;
+            }
+        });
+        
+        // Demo interaction effects
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add hover effects to voice indicators
+            const voiceIndicators = document.querySelectorAll('.voice-indicator');
+            voiceIndicators.forEach(indicator => {
+                indicator.addEventListener('mouseenter', () => {
+                    indicator.style.transform = 'translateX(5px)';
+                    indicator.style.background = 'rgba(178, 57, 255, 0.1)';
+                });
+                
+                indicator.addEventListener('mouseleave', () => {
+                    indicator.style.transform = 'translateX(0)';
+                    indicator.style.background = 'rgba(0, 0, 0, 0.3)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

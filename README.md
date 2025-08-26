@@ -228,7 +228,7 @@ This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE)
 
 **Santhosh Sharuk**
 
-[![Gmail](https://img.shields.io/badge/Gmail-z2learn.office@gmail.com-red?style=for-the-badge&logo=gmail)](mailto:z2learn.office@gmail.com)
+[![Gmail](https://img.shields.io/badge/Gmail-z2learn.office@gmail.com-red?style=for-the-badge&logo=gmail)](mailto:santhoshsharuk16@gmail.com)
 [![GitHub](https://img.shields.io/badge/GitHub-santhoshsharuk-black?style=for-the-badge&logo=github)](https://github.com/santhoshsharuk)
 
 <div align="center">

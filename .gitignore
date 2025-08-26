@@ -1,0 +1,17 @@
+# Ignore large model and audio files
+*.onnx
+*.ort
+*.dll
+*.exe
+*.mp3
+*.wav
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.env
+.venv

@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="https://path-to-your-logo-or-banner.png" alt="Podcast AI Banner" width="800"/>
+  <img src="/podcost banner.png" alt="Podcast AI Banner" width="800"/>
 
   <h1>🎙️ Podcast AI</h1>
 

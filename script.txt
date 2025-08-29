@@ -1,3 +1,0 @@
-Host: Hello and welcome to “Tech Talk”! This is the show where we explore the technologies that are shaping today’s modern world. I’m your host, Ahamed Shafeek.
-
-Expert: Hello Ahamed, I’m equally excited to be here and to talk about this field.

@@ -1,17 +1,18 @@
-# Ignore large model and audio files
-*.onnx
-*.ort
+# Ignore build and binary files
 *.dll
 *.exe
-*.mp3
-*.wav
+*.ort
+
+# Ignore environment files
+.env
+.venv/
+.env*/
+
+# Ignore espeak-ng-data folder
+espeak-ng-data/
 
 # Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Virtual environments
-.env
-.venv

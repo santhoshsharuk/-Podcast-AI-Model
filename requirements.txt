@@ -1,0 +1,4 @@
+Flask
+pydub
+google-generativeai
+python-dotenv

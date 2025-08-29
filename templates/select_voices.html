@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Voices | AI Podcast Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #1c2128;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --border-color: #30363d;
+            --accent-color: #5c67f2;
+            --accent-gradient: linear-gradient(45deg, #6a5acd, #5c67f2);
+            --accent-hover: #7b6df7;
+            --button-bg: #21262d;
+            --button-hover: #30363d;
+            --button-border: #6e7681;
+            --card-bg: #161b22;
+            --card-border: #30363d;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            background-image: linear-gradient(135deg, #0d1117 0%, #0a0c14 100%);
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin: 0;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a4a;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            margin: 2rem auto;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .step.completed .step-circle {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+        
+        .step.active .step-circle {
+            background-color: var(--bg-primary);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .step.active .step-label {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .step.completed .step-label {
+            color: var(--text-primary);
+        }
+        
+        .page-title {
+            margin-top: 2rem;
+            color: var(--accent-color);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Form */
+        .voice-selection-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            background-color: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .form-group:hover {
+            box-shadow: 0 0 20px rgba(92, 103, 242, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+        
+        .voice-select {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            font-size: 1rem;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+        
+        .voice-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(92, 103, 242, 0.2);
+            outline: none;
+        }
+        
+        .voice-info {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background-color: rgba(92, 103, 242, 0.1);
+            border: 1px solid rgba(92, 103, 242, 0.2);
+        }
+        
+        .voice-info-icon {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        .voice-info-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .submit-button {
+            padding: 1rem;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(92, 103, 242, 0.3);
+            margin-top: 1rem;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(92, 103, 242, 0.4);
+        }
+        
+        /* Sample playback */
+        .voice-sample {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            width: fit-content;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .voice-sample:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .voice-sample-icon {
+            margin-right: 0.5rem;
+        }
+        
+        .voice-sample-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        /* Loader */
+        .loader {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .loader-card {
+            background: var(--bg-tertiary);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .loader-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .loader-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .processing-loader {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .dot-typing {
+            position: relative;
+            left: -9999px;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 9984px 0 0 0 var(--accent-color), 9999px 0 0 0 var(--accent-color), 10014px 0 0 0 var(--accent-color);
+            animation: dot-typing 1.5s infinite linear;
+        }
+
+        @keyframes dot-typing {
+            0% {
+                box-shadow: 9984px 0 0 0 var(--accent-color), 9999px 0 0 0 var(--accent-color), 10014px 0 0 0 var(--accent-color);
+            }
+            16.667% {
+                box-shadow: 9984px -10px 0 0 var(--accent-color), 9999px 0 0 0 var(--accent-color), 10014px 0 0 0 var(--accent-color);
+            }
+            33.333% {
+                box-shadow: 9984px 0 0 0 var(--accent-color), 9999px 0 0 0 var(--accent-color), 10014px 0 0 0 var(--accent-color);
+            }
+            50% {
+                box-shadow: 9984px 0 0 0 var(--accent-color), 9999px -10px 0 0 var(--accent-color), 10014px 0 0 0 var(--accent-color);
+            }
+            66.667% {
+                box-shadow: 9984px 0 0 0 var(--accent-color), 9999px 0 0 0 var(--accent-color), 10014px 0 0 0 var(--accent-color);
+            }
+            83.333% {
+                box-shadow: 9984px 0 0 0 var(--accent-color), 9999px 0 0 0 var(--accent-color), 10014px -10px 0 0 var(--accent-color);
+            }
+            100% {
+                box-shadow: 9984px 0 0 0 var(--accent-color), 9999px 0 0 0 var(--accent-color), 10014px 0 0 0 var(--accent-color);
+            }
+        }
+        
+        /* Processing steps */
+        .processing-steps {
+            margin-top: 2rem;
+        }
+        
+        .processing-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            margin-right: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* Timestamp indicator */
+        .timestamp {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .timestamp-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        
+        /* User info */
+        .user-info {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            font-size: 10px;
+        }
+        
+        /* Back button */
+        .back-button {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .back-button:hover {
+            background-color: var(--button-hover);
+            color: var(--text-primary);
+        }
+        
+        .back-button-icon {
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .step-label {
+                font-size: 12px;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .page-subtitle {
+                font-size: 1rem;
+            }
+            
+            .back-button, .user-info {
+                position: static;
+                margin-bottom: 1rem;
+                width: fit-content;
+            }
+            
+            .back-button {
+                margin-bottom: 2rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .step-label {
+                display: none;
+            }
+            
+            .step-circle {
+                margin-bottom: 0;
+            }
+        }
+        
+        /* Audio player */
+        .audio-player-modal {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-tertiary);
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+        }
+        
+        .audio-player-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .audio-player-info {
+            font-size: 14px;
+            margin-right: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .audio-player-controls {
+            flex: 1;
+        }
+        
+        .audio-player {
+            width: 100%;
+            outline: none;
+        }
+        
+        .audio-player-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Back button -->
+    <a href="javascript:history.back()" class="back-button">
+        <span class="back-button-icon">←</span>
+        Back to Review
+    </a>
+    
+    <!-- User info -->
+    <div class="user-info">
+        <div class="user-avatar">S</div>
+        <span>santhoshsharuk</span>
+    </div>
+    
+    <main class="container animate__animated animate__fadeIn">
+        <!-- Step indicator -->
+        <div class="page-header">
+            <div class="step-indicator">
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Create</div>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Edit Script</div>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Review Changes</div>
+                </div>
+                <div class="step active">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Voices</div>
+                </div>
+            </div>
+            
+            <h1 class="page-title">Select Voices</h1>
+            <p class="page-subtitle">Your script is confirmed. Now, assign a voice to each speaker.</p>
+        </div>
+        
+        <!-- Voice selection form -->
+        <form id="voice-form" action="/process_audio" method="post" class="voice-selection-form animate__animated animate__fadeIn animate__delay-1s">
+            <!-- Pass the final script again -->
+            <input type="hidden" name="final_script" value="{{ final_script }}">
+            
+            {% for speaker in speakers %}
+            <div class="form-group animate__animated animate__fadeInUp" style="animation-delay: {{ 0.2 + loop.index * 0.1 }}s">
+                <label class="form-label" for="{{ speaker }}">{{ speaker }}'s Voice</label>
+                <select id="{{ speaker }}" name="voice_for_{{ speaker }}" class="voice-select" required onchange="updateVoiceInfo(this, '{{ speaker }}')">
+                    {% for voice in available_voices %}
+                    <option value="{{ voice }}">{{ voice.replace('.onnx', '') }}</option>
+                    {% endfor %}
+                </select>
+                
+                <div class="voice-sample" onclick="playSample('{{ speaker }}')">
+                    <span class="voice-sample-icon">▶️</span>
+                    <span class="voice-sample-text">Preview Voice</span>
+                </div>
+                
+                <div class="voice-info" id="voice-info-{{ speaker }}">
+                    <span class="voice-info-icon">ℹ️</span>
+                    <span class="voice-info-text">Select a voice to see more information</span>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="submit-button animate__animated animate__fadeInUp" style="animation-delay: {{ 0.2 + speakers|length * 0.1 + 0.2 }}s">Generate Podcast</button>
+        </form>
+        
+        <!-- Loading state -->
+        <div id="loader" class="loader">
+            <div class="loader-card">
+                <h3 class="loader-title">Generating your podcast...</h3>
+                <p class="loader-subtitle">This may take several minutes. Please don't close this window.</p>
+                
+                <div class="processing-loader">
+                    <div class="dot-typing"></div>
+                </div>
+                
+                <div class="processing-steps">
+                    <div class="processing-step">
+                        <div class="step-number">1</div>
+                        <div>Processing script and analyzing speakers</div>
+                    </div>
+                    <div class="processing-step">
+                        <div class="step-number">2</div>
+                        <div>Generating voice audio for each character</div>
+                    </div>
+                    <div class="processing-step">
+                        <div class="step-number">3</div>
+                        <div>Mixing audio tracks and adding enhancements</div>
+                    </div>
+                    <div class="processing-step">
+                        <div class="step-number">4</div>
+                        <div>Finalizing podcast and preparing download</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Audio player modal for samples -->
+    <div class="audio-player-modal" id="audio-player-modal">
+        <div class="audio-player-content">
+            <div class="audio-player-info" id="sample-voice-name">Loading sample...</div>
+            <div class="audio-player-controls">
+                <audio controls id="sample-player" class="audio-player">
+                    <source src="" type="audio/mp3" id="sample-source">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <button class="audio-player-close" onclick="closeSamplePlayer()">×</button>
+        </div>
+    </div>
+    
+    <!-- Timestamp indicator -->
+    <div class="timestamp">
+        <span class="timestamp-dot"></span>
+        <span>2025-08-29 01:43:24</span>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all voice info sections with first voice details
+            const selects = document.querySelectorAll('.voice-select');
+            selects.forEach(select => {
+                const speakerName = select.getAttribute('id');
+                updateVoiceInfo(select, speakerName);
+            });
+        });
+        
+        // Form submission handler
+        document.getElementById('voice-form').addEventListener('submit', function() {
+            document.getElementById('voice-form').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+        });
+        
+        // Update voice information when selection changes
+        function updateVoiceInfo(select, speaker) {
+            const selectedVoice = select.options[select.selectedIndex].text;
+            const infoDiv = document.getElementById(`voice-info-${speaker}`);
+            
+            // Get details based on voice name (in a real app, this would come from your database)
+            let gender = 'Male';
+            let accent = 'American';
+            let tone = 'Natural';
+            
+            if (selectedVoice.includes('female') || selectedVoice.toLowerCase().includes('f_')) {
+                gender = 'Female';
+            }
+            
+            if (selectedVoice.toLowerCase().includes('british') || selectedVoice.toLowerCase().includes('uk')) {
+                accent = 'British';
+            } else if (selectedVoice.toLowerCase().includes('australian') || selectedVoice.toLowerCase().includes('au')) {
+                accent = 'Australian';
+            }
+            
+            if (selectedVoice.toLowerCase().includes('warm') || selectedVoice.toLowerCase().includes('friendly')) {
+                tone = 'Warm';
+            } else if (selectedVoice.toLowerCase().includes('formal') || selectedVoice.toLowerCase().includes('professional')) {
+                tone = 'Formal';
+            }
+            
+            infoDiv.innerHTML = `
+                <span class="voice-info-icon">ℹ️</span>
+                <span class="voice-info-text">
+                    <strong>${selectedVoice}</strong> - ${gender}, ${accent} accent, ${tone} tone
+                </span>
+            `;
+        }
+        
+        // Play voice sample
+        function playSample(speaker) {
+            const select = document.getElementById(speaker);
+            const selectedVoice = select.options[select.selectedIndex].value;
+            const selectedVoiceName = select.options[select.selectedIndex].text;
+            
+            // Set up audio player
+            const audioPlayer = document.getElementById('sample-player');
+            const audioSource = document.getElementById('sample-source');
+            
+            // In a real app, you would have a proper path to sample files
+            // This is just a simulation
+            audioSource.src = `/static/voice_samples/${selectedVoice.replace('.onnx', '')}_sample.mp3`;
+            
+            // Update voice name in player
+            document.getElementById('sample-voice-name').textContent = `${selectedVoiceName} (${speaker})`;
+            
+            // Show player and play
+            document.getElementById('audio-player-modal').style.display = 'block';
+            
+            // Reset and play
+            audioPlayer.load();
+            audioPlayer.play().catch(e => console.log('Auto-play prevented by browser:', e));
+        }
+        
+        // Close sample player
+        function closeSamplePlayer() {
+            const audioPlayer = document.getElementById('sample-player');
+            audioPlayer.pause();
+            document.getElementById('audio-player-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

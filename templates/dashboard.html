@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Podcast Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --bg-primary: #1e1f21;
+            --bg-secondary: #252628;
+            --bg-tertiary: #2a2b2d;
+            --accent-color: #ff6b35;
+            --accent-hover: #ff8355;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-tertiary: #6c6c6c;
+            --border-color: #3a3a3a;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            --success-color: #4caf50;
+            --info-color: #2196f3;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --border-radius-sm: 6px;
+            --border-radius: 10px;
+            --border-radius-lg: 16px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a4a;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: var(--bg-secondary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background-color: var(--accent-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            padding: 16px 8px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .sidebar-label {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .sidebar-menu {
+            list-style-type: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 2px;
+            border-radius: var(--border-radius-sm);
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--border-radius-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        
+        .menu-item.active a {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .menu-item-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            opacity: 0.8;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+        
+        .user-info {
+            line-height: 1.2;
+        }
+        
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .user-actions {
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .page-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .header-greeting {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-top: 4px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .btn-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        
+        .dashboard-content {
+            flex: 1;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+        
+        /* Stats section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .stat-card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-header {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .stat-footer {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Charts section */
+        .charts-container {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .chart-card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            flex: 1;
+        }
+        
+        .chart-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .chart-subtitle {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        
+        .chart-content {
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Bar chart styling */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 160px;
+            gap: 24px;
+        }
+        
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .bar {
+            width: 100%;
+            background: linear-gradient(to top, #ff6b35, #ff8f59);
+            border-radius: 4px 4px 0 0;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .bar-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Donut chart styling */
+        .donut-chart {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto;
+        }
+        
+        .donut-ring {
+            stroke: var(--accent-color);
+            stroke-width: 12;
+            fill: transparent;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 60;
+            transform: rotate(-90deg);
+            transform-origin: center;
+        }
+        
+        .donut-bg {
+            stroke: var(--border-color);
+            stroke-width: 12;
+            fill: transparent;
+        }
+        
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .donut-value {
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .donut-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        
+        .chart-legend {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+        
+        /* Recent podcasts section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .section-actions {
+            font-size: 13px;
+            color: var(--accent-color);
+            cursor: pointer;
+        }
+        
+        .table {
+            width: 100%;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            padding: 12px 20px;
+        }
+        
+        .table-row {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 20px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .table-row:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        
+        .table-col {
+            flex: 1;
+        }
+        
+        .table-col:first-child {
+            flex: 2;
+        }
+        
+        .table-col:last-child {
+            text-align: right;
+        }
+        
+        .table-header .table-col {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .podcast-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .podcast-date {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .podcast-duration {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .podcast-duration-icon {
+            margin-right: 6px;
+            opacity: 0.7;
+        }
+        
+        .podcast-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .status-completed {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+        
+        .podcast-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        
+        .action-button {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .action-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+        
+        .play-button {
+            background-color: rgba(255, 107, 53, 0.2);
+            color: var(--accent-color);
+        }
+        
+        .play-button:hover {
+            background-color: rgba(255, 107, 53, 0.3);
+            color: var(--accent-color);
+        }
+        
+        /* Empty state */
+        .empty-state {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-tertiary);
+        }
+        
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .empty-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            max-width: 400px;
+        }
+        
+        /* Mobile menu button */
+        .mobile-menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 16px;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+            .charts-container {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -240px;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .table-col.podcast-date-col {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-actions {
+                width: 100%;
+            }
+            
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .dashboard-content {
+                padding: 20px;
+            }
+            
+            .table-header, .table-row {
+                padding: 12px;
+            }
+            
+            .table-col:not(:first-child):not(:last-child) {
+                display: none;
+            }
+            
+            .table-col:first-child {
+                flex: 1;
+            }
+        }
+        
+        /* Overlay when mobile sidebar is open */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🎧</div>
+                <div class="logo-text">AI Podcast</div>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Menu</div>
+                <ul class="sidebar-menu">
+                    <li class="menu-item active">
+                        <a href="/">
+                            <span class="menu-item-icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="/create">
+                            <span class="menu-item-icon">✨</span>
+                            Create New
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="/history">
+                            <span class="menu-item-icon">🔍</span>
+                            History
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-label">Tools</div>
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">📝</span>
+                            Script Editor
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">🔊</span>
+                            Voice Library
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">⚙️</span>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-label">Help</div>
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">❓</span>
+                            FAQ
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">🔔</span>
+                            Support
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">S</div>
+                <div class="user-info">
+                    <div class="user-name">Santhosh</div>
+                    <div class="user-role">Creator</div>
+                </div>
+            </div>
+            <div class="user-actions">⋮</div>
+        </div>
+    </aside>
+    
+    <!-- Main content -->
+    <div class="main-content">
+        <!-- Page header -->
+        <div class="page-header animate__animated animate__fadeIn">
+            <div class="header-title">
+                <h1>Good Evening! Santhosh</h1>
+                <div class="header-greeting">Here's how your podcasts are doing</div>
+            </div>
+            <div class="header-actions">
+                <a href="/create" class="btn btn-primary animate__animated animate__pulse animate__infinite animate__slower">
+                    <span class="btn-icon">✨</span>
+                    Create New Podcast
+                </a>
+                <a href="/history" class="btn btn-secondary">
+                    <span class="btn-icon">📜</span>
+                    View History
+                </a>
+            </div>
+        </div>
+        
+        <!-- Dashboard content -->
+        <div class="dashboard-content">
+            <!-- Stats row -->
+            <div class="stats-grid animate__animated animate__fadeInUp">
+                <div class="stat-card">
+                    <div class="stat-header">Podcasts Created</div>
+                    <div class="stat-value">{{ total_podcasts }}</div>
+                    <div class="stat-footer">Total podcasts generated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">Audio Duration</div>
+                    <div class="stat-value">{{ formatted_duration }}</div>
+                    <div class="stat-footer">Total minutes of content</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">Last Created</div>
+                    <div class="stat-value">{{ last_creation_date }}</div>
+                    <div class="stat-footer">Most recent podcast</div>
+                </div>
+            </div>
+            
+            <!-- Charts row -->
+            <div class="charts-container animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Weekly Activity</div>
+                            <div class="chart-subtitle">Podcasts created by day</div>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <div class="bar-chart">
+                            <div class="bar-group">
+                                <div class="bar" style="height: 40%;"></div>
+                                <div class="bar-label">Mon</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar" style="height: 70%;"></div>
+                                <div class="bar-label">Tue</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar" style="height: 45%;"></div>
+                                <div class="bar-label">Wed</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar" style="height: 30%;"></div>
+                                <div class="bar-label">Thu</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar" style="height: 65%;"></div>
+                                <div class="bar-label">Fri</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar" style="height: 85%;"></div>
+                                <div class="bar-label">Sat</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar" style="height: 25%;"></div>
+                                <div class="bar-label">Sun</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Podcast Stats</div>
+                            <div class="chart-subtitle">Distribution by category</div>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <div class="donut-chart">
+                            <svg width="160" height="160" viewBox="0 0 100 100">
+                                <circle class="donut-bg" cx="50" cy="50" r="45" />
+                                <circle class="donut-ring" cx="50" cy="50" r="45" />
+                            </svg>
+                            <div class="donut-center">
+                                <div class="donut-value">14</div>
+                                <div class="donut-label">Podcasts</div>
+                            </div>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--accent-color);"></div>
+                                <span>Tech Podcasts (65%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--info-color);"></div>
+                                <span>Science Podcasts (20%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: var(--warning-color);"></div>
+                                <span>Other Topics (15%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent podcasts -->
+            <div class="section-header animate__animated animate__fadeIn" style="animation-delay: 0.2s">
+                <div class="section-title">Recent Podcasts</div>
+                <div class="section-actions">View all →</div>
+            </div>
+            
+            {% if recent_podcasts %}
+                <div class="table animate__animated animate__fadeIn" style="animation-delay: 0.3s">
+                    <div class="table-header">
+                        <div class="table-col">Podcast</div>
+                        <div class="table-col podcast-date-col">Created</div>
+                        <div class="table-col">Duration</div>
+                        <div class="table-col">Status</div>
+                        <div class="table-col">Actions</div>
+                    </div>
+                    
+                    {% for entry in recent_podcasts %}
+                    <div class="table-row">
+                        <div class="table-col">
+                            <div class="podcast-title">{{ entry.topic }}</div>
+                            <div class="podcast-date">{{ entry.creation_date | replace('T', ' ') | truncate(16, True, '...') }}</div>
+                        </div>
+                        <div class="table-col podcast-date-col">
+                            <div class="podcast-date">{{ entry.creation_date | replace('T', ' ') | truncate(16, True, '...') }}</div>
+                        </div>
+                        <div class="table-col">
+                            <div class="podcast-duration">
+                                <span class="podcast-duration-icon">⏱️</span>
+                                {{ entry.duration }} min
+                            </div>
+                        </div>
+                        <div class="table-col">
+                            <div class="podcast-status status-completed">Completed</div>
+                        </div>
+                        <div class="table-col">
+                            <div class="podcast-actions">
+                                <div class="action-button">
+                                    <span>📋</span>
+                                </div>
+                                <div class="action-button play-button">
+                                    <span>▶️</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state animate__animated animate__fadeIn" style="animation-delay: 0.3s">
+                    <div class="empty-icon">🎙️</div>
+                    <div class="empty-title">No podcasts created yet</div>
+                    <div class="empty-description">Start by creating your first AI-generated podcast to see your activity here.</div>
+                    <a href="/create" class="btn btn-primary">
+                        <span class="btn-icon">✨</span>
+                        Create Your First Podcast
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Mobile menu overlay -->
+    <div class="sidebar-overlay"></div>
+    
+    <!-- Mobile menu toggle button -->
+    <button class="mobile-menu-toggle">
+        <span>☰</span>
+    </button>
+    
+    <script>
+        // Get current date and format greeting
+        const currentHour = new Date().getHours();
+        let greeting = "Good Morning!";
+        if (currentHour >= 12 && currentHour < 18) {
+            greeting = "Good Afternoon!";
+        } else if (currentHour >= 18) {
+            greeting = "Good Evening!";
+        }
+        
+        // Update greeting in header
+        const headerTitle = document.querySelector('.header-title h1');
+        if (headerTitle) {
+            headerTitle.textContent = `${greeting} Santhosh`;
+        }
+        
+        // Mobile menu toggle
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+        }
+        
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>

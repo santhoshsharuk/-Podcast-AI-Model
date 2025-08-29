@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Podcast History | AI Podcast Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --bg-primary: #1e1f21;
+            --bg-secondary: #252628;
+            --bg-tertiary: #2a2b2d;
+            --accent-color: #ff6b35;
+            --accent-hover: #ff8355;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-tertiary: #6c6c6c;
+            --border-color: #3a3a3a;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            --success-color: #4caf50;
+            --info-color: #2196f3;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --border-radius-sm: 6px;
+            --border-radius: 10px;
+            --border-radius-lg: 16px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a4a;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: var(--bg-secondary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background-color: var(--accent-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            padding: 16px 8px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .sidebar-label {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .sidebar-menu {
+            list-style-type: none;
+        }
+        
+        .menu-item {
+            margin-bottom: 2px;
+            border-radius: var(--border-radius-sm);
+        }
+        
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--border-radius-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .menu-item a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        
+        .menu-item.active a {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .menu-item-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            opacity: 0.8;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+        
+        .user-info {
+            line-height: 1.2;
+        }
+        
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .user-actions {
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .page-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-top: 4px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .btn-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        
+        /* History content */
+        .history-content {
+            flex: 1;
+            padding: 32px;
+        }
+        
+        /* Filters and search */
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+        
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 320px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        
+        .search-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 16px;
+            pointer-events: none;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .dropdown-filter {
+            position: relative;
+        }
+        
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .dropdown-toggle:after {
+            content: "▼";
+            font-size: 10px;
+            margin-left: 8px;
+            color: var(--text-tertiary);
+        }
+        
+        /* Podcast list */
+        .podcasts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .podcast-card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .podcast-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .podcast-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .podcast-info {
+            flex: 1;
+        }
+        
+        .podcast-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        
+        .podcast-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .meta-icon {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+        
+        .podcast-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-button {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .action-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+        
+        .action-button.download:hover {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: var(--info-color);
+        }
+        
+        .action-button.delete:hover {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--danger-color);
+        }
+        
+        .podcast-body {
+            display: flex;
+            flex-direction: column;
+            padding: 16px 20px;
+        }
+        
+        .audio-player {
+            margin-bottom: 16px;
+        }
+        
+        audio {
+            width: 100%;
+            height: 36px;
+            border-radius: var(--border-radius-sm);
+            background-color: var(--bg-tertiary);
+        }
+        
+        audio::-webkit-media-controls-panel {
+            background-color: var(--bg-tertiary);
+        }
+        
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            color: var(--text-primary);
+        }
+        
+        .script-toggle {
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .script-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        
+        .script-toggle-icon {
+            margin-right: 6px;
+            transition: transform 0.2s ease;
+        }
+        
+        .script-toggle.active .script-toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        .script-container {
+            display: none;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 16px;
+            margin-top: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        
+        .script-container.show {
+            display: block;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-tertiary);
+        }
+        
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .empty-message {
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin: 0 auto 24px;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 32px;
+            gap: 8px;
+        }
+        
+        .page-item {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius-sm);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .page-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        
+        .page-item.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .page-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Mobile menu button */
+        .mobile-menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 16px;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .podcast-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -240px;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: none;
+            }
+            
+            .filter-options {
+                justify-content: space-between;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-actions {
+                width: 100%;
+            }
+            
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .podcast-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .podcast-actions {
+                align-self: flex-end;
+            }
+            
+            .history-content {
+                padding: 20px;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+            }
+        }
+        
+        /* Overlay when mobile sidebar is open */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+        
+        /* Time indicator */
+        .time-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 8px 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            box-shadow: var(--card-shadow);
+            z-index: 100;
+        }
+        
+        .time-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+        }
+        
+        /* New styles for transitioning script container */
+        .script-container {
+            max-height: 0;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .script-container.show {
+            display: block;
+            max-height: 300px;
+            margin-top: 16px;
+            padding: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🎧</div>
+                <div class="logo-text">AI Podcast</div>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Menu</div>
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <a href="/">
+                            <span class="menu-item-icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="/create">
+                            <span class="menu-item-icon">✨</span>
+                            Create New
+                        </a>
+                    </li>
+                    <li class="menu-item active">
+                        <a href="/history">
+                            <span class="menu-item-icon">🔍</span>
+                            History
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-label">Tools</div>
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">📝</span>
+                            Script Editor
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">🔊</span>
+                            Voice Library
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">⚙️</span>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-label">Help</div>
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">❓</span>
+                            FAQ
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">
+                            <span class="menu-item-icon">🔔</span>
+                            Support
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">S</div>
+                <div class="user-info">
+                    <div class="user-name">Santhosh</div>
+                    <div class="user-role">Creator</div>
+                </div>
+            </div>
+            <div class="user-actions">⋮</div>
+        </div>
+    </aside>
+    
+    <!-- Main content -->
+    <div class="main-content">
+        <!-- Page header -->
+        <div class="page-header animate__animated animate__fadeIn">
+            <div class="header-title">
+                <h1>Podcast History</h1>
+                <div class="header-subtitle">View and manage all your generated podcasts</div>
+            </div>
+            <div class="header-actions">
+                <a href="/create" class="btn btn-primary">
+                    <span class="btn-icon">✨</span>
+                    Create New Podcast
+                </a>
+                <button class="btn btn-secondary">
+                    <span class="btn-icon">📁</span>
+                    Export Library
+                </button>
+            </div>
+        </div>
+        
+        <!-- History content -->
+        <div class="history-content">
+            <!-- Filters and search -->
+            <div class="filter-bar animate__animated animate__fadeIn" style="animation-delay: 0.1s">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search podcasts...">
+                </div>
+                <div class="filter-options">
+                    <div class="dropdown-filter">
+                        <div class="dropdown-toggle">Sort by: Date ↓</div>
+                    </div>
+                    <div class="dropdown-filter">
+                        <div class="dropdown-toggle">Filter: All</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Podcast list -->
+            {% if history %}
+                <div class="podcasts-list">
+                    {% for entry in history %}
+                    <div class="podcast-card animate__animated animate__fadeIn" style="animation-delay: {{ 0.2 + loop.index0 * 0.1 }}s">
+                        <div class="podcast-header">
+                            <div class="podcast-info">
+                                <div class="podcast-title">{{ entry.topic }}</div>
+                                <div class="podcast-meta">
+                                    <div class="meta-item">
+                                        <span class="meta-icon">📅</span>
+                                        {{ entry.creation_date | replace('T', ' ') | truncate(16, True, '...') }}
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-icon">⏱️</span>
+                                        {{ entry.duration }} minutes
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="podcast-actions">
+                                <button class="action-button download" title="Download">💾</button>
+                                <button class="action-button" title="Share">🔗</button>
+                                <button class="action-button delete" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="podcast-body">
+                            <div class="audio-player">
+                                <audio controls>
+                                    <source src="{{ url_for('static', filename='output/' + entry.filename) }}" type="audio/mpeg">
+                                    Your browser does not support the audio player.
+                                </audio>
+                            </div>
+                            <button class="script-toggle" data-script-id="script-{{ loop.index }}">
+                                <span class="script-toggle-icon">▶</span>
+                                Show Script
+                            </button>
+                            <div id="script-{{ loop.index }}" class="script-container">
+                                {{ entry.script }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination animate__animated animate__fadeIn" style="animation-delay: 0.5s">
+                    <div class="page-item disabled">«</div>
+                    <div class="page-item active">1</div>
+                    <div class="page-item">2</div>
+                    <div class="page-item">3</div>
+                    <div class="page-item">»</div>
+                </div>
+            {% else %}
+                <div class="empty-state animate__animated animate__fadeIn" style="animation-delay: 0.2s">
+                    <div class="empty-icon">🎙️</div>
+                    <div class="empty-title">No podcasts yet</div>
+                    <div class="empty-message">You haven't created any podcasts yet. Start by creating your first AI-generated podcast.</div>
+                    <a href="/create" class="btn btn-primary">
+                        <span class="btn-icon">✨</span>
+                        Create Your First Podcast
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Time indicator -->
+    <div class="time-indicator animate__animated animate__fadeIn" style="animation-delay: 0.6s">
+        <span class="time-dot"></span>
+        2025-08-29 00:50:00 UTC
+    </div>
+    
+    <!-- Mobile menu overlay -->
+    <div class="sidebar-overlay"></div>
+    
+    <!-- Mobile menu toggle button -->
+    <button class="mobile-menu-toggle">
+        <span>☰</span>
+    </button>
+    
+    <script>
+        // Script toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const scriptToggles = document.querySelectorAll('.script-toggle');
+            
+            scriptToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const scriptId = this.getAttribute('data-script-id');
+                    const scriptContainer = document.getElementById(scriptId);
+                    
+                    if (scriptContainer.classList.contains('show')) {
+                        scriptContainer.classList.remove('show');
+                        this.querySelector('.script-toggle-icon').textContent = '▶';
+                        this.textContent = this.textContent.replace('Hide', 'Show');
+                    } else {
+                        scriptContainer.classList.add('show');
+                        this.querySelector('.script-toggle-icon').textContent = '▼';
+                        this.textContent = this.textContent.replace('Show', 'Hide');
+                    }
+                });
+            });
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+        }
+        
+        if (overlay) {
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Changes | AI Podcast Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #1c2128;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --border-color: #30363d;
+            --accent-color: #ff5722;
+            --accent-hover: #ff7043;
+            --button-bg: #21262d;
+            --button-hover: #30363d;
+            --button-border: #6e7681;
+            --added-bg: rgba(46, 160, 67, 0.15);
+            --added-border: rgba(46, 160, 67, 0.4);
+            --added-text: #3fb950;
+            --removed-bg: rgba(248, 81, 73, 0.15);
+            --removed-border: rgba(248, 81, 73, 0.4);
+            --removed-text: #f85149;
+            --line-number-color: #6e7681;
+            --file-header-bg: #0d1117;
+            --file-header-border: #30363d;
+            --gutter-bg: #0d1117;
+            --code-bg: #0d1117;
+            --step-active: #ff5722;
+            --step-completed: #238636;
+            --step-inactive: #6e7681;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a4a;
+        }
+        
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        /* Header */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--bg-primary);
+            border: 2px solid var(--step-inactive);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .step.completed .step-circle {
+            background-color: var(--step-completed);
+            border-color: var(--step-completed);
+            color: white;
+        }
+        
+        .step.active .step-circle {
+            background-color: var(--bg-primary);
+            border-color: var(--step-active);
+            color: var(--step-active);
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .step.active .step-label {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .step.completed .step-label {
+            color: var(--text-primary);
+        }
+        
+        .page-title {
+            text-align: center;
+        }
+        
+        .page-title h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* File Diff View */
+        .file-diff {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .file-header {
+            background-color: var(--file-header-bg);
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--file-header-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-title {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .file-icon {
+            margin-right: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .file-button {
+            background-color: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .file-button:hover {
+            background-color: var(--button-hover);
+            color: var(--text-primary);
+        }
+        
+        .diff-stats {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-left: 16px;
+        }
+        
+        .diff-added {
+            color: var(--added-text);
+            margin-right: 8px;
+        }
+        
+        .diff-removed {
+            color: var(--removed-text);
+        }
+        
+        .diff-view {
+            display: flex;
+            overflow-x: auto;
+        }
+        
+        /* Line numbers */
+        .diff-line-numbers {
+            background-color: var(--gutter-bg);
+            color: var(--line-number-color);
+            padding: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            text-align: right;
+            user-select: none;
+            border-right: 1px solid var(--border-color);
+            min-width: 50px;
+        }
+        
+        .line-number {
+            padding: 0 8px;
+            line-height: 20px;
+            display: block;
+        }
+        
+        .line-number.added {
+            background-color: var(--added-bg);
+        }
+        
+        .line-number.removed {
+            background-color: var(--removed-bg);
+        }
+        
+        /* Code content */
+        .diff-content {
+            flex: 1;
+            background-color: var(--code-bg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 20px;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        
+        .code-line {
+            padding: 0 16px;
+            display: block;
+            white-space: pre;
+        }
+        
+        .code-line.added {
+            background-color: var(--added-bg);
+            border-left: 4px solid var(--added-border);
+            padding-left: 12px;
+            color: var(--text-primary);
+        }
+        
+        .code-line.removed {
+            background-color: var(--removed-bg);
+            border-left: 4px solid var(--removed-border);
+            padding-left: 12px;
+            color: var(--text-primary);
+        }
+        
+        .empty-line {
+            height: 20px;
+            background-color: var(--code-bg);
+        }
+        
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            margin-bottom: 1rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            align-self: flex-end;
+        }
+        
+        .toggle-option {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .toggle-option.active {
+            background-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .toggle-option:not(:last-child) {
+            border-right: 1px solid var(--border-color);
+        }
+        
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+        
+        .button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .button-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .button-primary:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        .button-secondary {
+            background-color: var(--button-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--button-border);
+        }
+        
+        .button-secondary:hover {
+            background-color: var(--button-hover);
+            color: var(--text-primary);
+        }
+        
+        /* View options */
+        .header-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .step-label {
+                font-size: 12px;
+            }
+            
+            .page-title h1 {
+                font-size: 20px;
+            }
+            
+            .page-subtitle {
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .step-label {
+                display: none;
+            }
+            
+            .step-circle {
+                margin-bottom: 0;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .button {
+                width: 100%;
+            }
+            
+            .file-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .file-actions {
+                margin-top: 8px;
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Step indicator -->
+        <div class="page-header">
+            <div class="step-indicator">
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Create</div>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Edit Script</div>
+                </div>
+                <div class="step active">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Review Changes</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Voices</div>
+                </div>
+            </div>
+            
+            <div class="page-title">
+                <h1>Review Your Changes</h1>
+            </div>
+            <div class="page-subtitle">
+                Compare your edited script with the original version before proceeding
+            </div>
+        </div>
+        
+        <!-- View toggle options -->
+        <div class="header-actions">
+            <div class="view-toggle">
+                <button class="toggle-option active" id="toggle-split">Split</button>
+                <button class="toggle-option" id="toggle-unified">Unified</button>
+            </div>
+        </div>
+        
+        <!-- File diff view -->
+        <div class="file-diff">
+            <div class="file-header">
+                <div class="file-title">
+                    <span class="file-icon">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.75 1.5C3.33579 1.5 3 1.83579 3 2.25V13.75C3 14.1642 3.33579 14.5 3.75 14.5H12.25C12.6642 14.5 13 14.1642 13 13.75V6.5H9C8.17157 6.5 7.5 5.82843 7.5 5V1.5H3.75ZM9 1.5V5H12.5L9 1.5ZM1.5 2.25C1.5 1.00736 2.50736 0 3.75 0H7.97973C8.3852 0 8.77404 0.1605 9.06066 0.43934L13.0607 4.18934C13.3473 4.46817 13.5 4.83577 13.5 5.25V13.75C13.5 14.9926 12.4926 16 11.25 16H3.75C2.50736 16 1.5 14.9926 1.5 13.75V2.25Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    podcast_script.txt
+                    <div class="diff-stats">
+                        <span class="diff-added">+{{ added_count }}</span>
+                        <span class="diff-removed">-{{ removed_count }}</span>
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <button class="file-button" id="expand-all">Expand All</button>
+                    <button class="file-button" id="collapse-unchanged">Hide Unchanged</button>
+                </div>
+            </div>
+            
+            <div class="diff-view" id="diff-container">
+                <!-- This will be filled dynamically by JS -->
+            </div>
+        </div>
+        
+        <!-- Action buttons -->
+        <div class="action-buttons">
+            <button class="button button-secondary" id="edit-again-btn">
+                Edit Again
+            </button>
+            <form action="/select_voices" method="post" id="continue-form">
+                <!-- Pass the final, confirmed script to the next step -->
+                <input type="hidden" name="final_script" id="final-script-input" value="{{ edited_script }}">
+                <button type="submit" class="button button-primary">
+                    Confirm & Choose Voices
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.75 3.75L13 8M13 8L8.75 12.25M13 8H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get reference to elements
+            const diffContainer = document.getElementById('diff-container');
+            const toggleSplit = document.getElementById('toggle-split');
+            const toggleUnified = document.getElementById('toggle-unified');
+            const expandAllBtn = document.getElementById('expand-all');
+            const collapseUnchangedBtn = document.getElementById('collapse-unchanged');
+            const editAgainBtn = document.getElementById('edit-again-btn');
+            
+            // Original and edited script content
+            const originalScript = `{{ original_script | safe }}`;
+            const editedScript = `{{ edited_script | safe }}`;
+            
+            // Compute the diff
+            const diff = computeDiff(originalScript, editedScript);
+            
+            // Initialize with split view
+            renderSplitView(diff);
+            
+            // Toggle between views
+            toggleSplit.addEventListener('click', function() {
+                toggleSplit.classList.add('active');
+                toggleUnified.classList.remove('active');
+                renderSplitView(diff);
+            });
+            
+            toggleUnified.addEventListener('click', function() {
+                toggleSplit.classList.remove('active');
+                toggleUnified.classList.add('active');
+                renderUnifiedView(diff);
+            });
+            
+            // Button actions
+            expandAllBtn.addEventListener('click', function() {
+                expandAll();
+            });
+            
+            collapseUnchangedBtn.addEventListener('click', function() {
+                toggleUnchanged();
+            });
+            
+            editAgainBtn.addEventListener('click', function() {
+                // Go back to the edit page
+                window.history.back();
+            });
+            
+            // Function to compute the diff between two texts
+            function computeDiff(text1, text2) {
+                const lines1 = text1.split('\n');
+                const lines2 = text2.split('\n');
+                const result = [];
+                let i = 0, j = 0;
+                
+                // Very simple diff algorithm (not ideal for production)
+                while (i < lines1.length || j < lines2.length) {
+                    if (i < lines1.length && j < lines2.length && lines1[i] === lines2[j]) {
+                        result.push({ type: 'unchanged', line: lines1[i], oldLine: i + 1, newLine: j + 1 });
+                        i++;
+                        j++;
+                    } else {
+                        // Try to find the next matching line
+                        let found = false;
+                        for (let lookAhead = 1; lookAhead <= 3; lookAhead++) {
+                            if (i + lookAhead < lines1.length && lines1[i + lookAhead] === lines2[j]) {
+                                // Lines were removed
+                                for (let k = i; k < i + lookAhead; k++) {
+                                    result.push({ type: 'removed', line: lines1[k], oldLine: k + 1, newLine: null });
+                                }
+                                i += lookAhead;
+                                found = true;
+                                break;
+                            } else if (j + lookAhead < lines2.length && lines1[i] === lines2[j + lookAhead]) {
+                                // Lines were added
+                                for (let k = j; k < j + lookAhead; k++) {
+                                    result.push({ type: 'added', line: lines2[k], oldLine: null, newLine: k + 1 });
+                                }
+                                j += lookAhead;
+                                found = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!found) {
+                            // No match found within lookahead, assume one line was changed
+                            if (i < lines1.length) {
+                                result.push({ type: 'removed', line: lines1[i], oldLine: i + 1, newLine: null });
+                                i++;
+                            }
+                            if (j < lines2.length) {
+                                result.push({ type: 'added', line: lines2[j], oldLine: null, newLine: j + 1 });
+                                j++;
+                            }
+                        }
+                    }
+                }
+                
+                return result;
+            }
+            
+            // Function to render split view (side-by-side diff)
+            function renderSplitView(diff) {
+                diffContainer.innerHTML = '';
+                
+                // Create containers for original and edited views
+                const originalContainer = document.createElement('div');
+                originalContainer.style.width = '50%';
+                originalContainer.style.display = 'flex';
+                
+                const editedContainer = document.createElement('div');
+                editedContainer.style.width = '50%';
+                editedContainer.style.display = 'flex';
+                
+                // Create line number columns
+                const originalLineNumbers = document.createElement('div');
+                originalLineNumbers.className = 'diff-line-numbers';
+                
+                const editedLineNumbers = document.createElement('div');
+                editedLineNumbers.className = 'diff-line-numbers';
+                
+                // Create content columns
+                const originalContent = document.createElement('div');
+                originalContent.className = 'diff-content';
+                
+                const editedContent = document.createElement('div');
+                editedContent.className = 'diff-content';
+                
+                // Process each line in the diff
+                diff.forEach(item => {
+                    if (item.type === 'unchanged' || item.type === 'removed') {
+                        // Original side
+                        const lineNumber = document.createElement('span');
+                        lineNumber.className = `line-number ${item.type}`;
+                        lineNumber.textContent = item.oldLine;
+                        originalLineNumbers.appendChild(lineNumber);
+                        
+                        const codeLine = document.createElement('span');
+                        codeLine.className = `code-line ${item.type}`;
+                        codeLine.textContent = item.line;
+                        originalContent.appendChild(codeLine);
+                    } else {
+                        // Empty line on original side
+                        const emptyLineNumber = document.createElement('span');
+                        emptyLineNumber.className = 'line-number';
+                        emptyLineNumber.textContent = ' ';
+                        originalLineNumbers.appendChild(emptyLineNumber);
+                        
+                        const emptyLine = document.createElement('span');
+                        emptyLine.className = 'empty-line';
+                        originalContent.appendChild(emptyLine);
+                    }
+                    
+                    if (item.type === 'unchanged' || item.type === 'added') {
+                        // Edited side
+                        const lineNumber = document.createElement('span');
+                        lineNumber.className = `line-number ${item.type}`;
+                        lineNumber.textContent = item.newLine;
+                        editedLineNumbers.appendChild(lineNumber);
+                        
+                        const codeLine = document.createElement('span');
+                        codeLine.className = `code-line ${item.type}`;
+                        codeLine.textContent = item.line;
+                        editedContent.appendChild(codeLine);
+                    } else {
+                        // Empty line on edited side
+                        const emptyLineNumber = document.createElement('span');
+                        emptyLineNumber.className = 'line-number';
+                        emptyLineNumber.textContent = ' ';
+                        editedLineNumbers.appendChild(emptyLineNumber);
+                        
+                        const emptyLine = document.createElement('span');
+                        emptyLine.className = 'empty-line';
+                        editedContent.appendChild(emptyLine);
+                    }
+                });
+                
+                // Assemble the containers
+                originalContainer.appendChild(originalLineNumbers);
+                originalContainer.appendChild(originalContent);
+                
+                editedContainer.appendChild(editedLineNumbers);
+                editedContainer.appendChild(editedContent);
+                
+                diffContainer.appendChild(originalContainer);
+                diffContainer.appendChild(editedContainer);
+            }
+            
+            // Function to render unified view (single column diff)
+            function renderUnifiedView(diff) {
+                diffContainer.innerHTML = '';
+                
+                // Create a single container
+                const container = document.createElement('div');
+                container.style.width = '100%';
+                container.style.display = 'flex';
+                
+                // Create line number column
+                const lineNumbers = document.createElement('div');
+                lineNumbers.className = 'diff-line-numbers';
+                
+                // Create content column
+                const content = document.createElement('div');
+                content.className = 'diff-content';
+                
+                // Process each line in the diff
+                diff.forEach(item => {
+                    const lineNumber = document.createElement('span');
+                    lineNumber.className = `line-number ${item.type}`;
+                    
+                    if (item.type === 'unchanged') {
+                        lineNumber.textContent = `${item.oldLine}`;
+                    } else if (item.type === 'added') {
+                        lineNumber.textContent = `+${item.newLine}`;
+                    } else if (item.type === 'removed') {
+                        lineNumber.textContent = `-${item.oldLine}`;
+                    }
+                    
+                    lineNumbers.appendChild(lineNumber);
+                    
+                    const codeLine = document.createElement('span');
+                    codeLine.className = `code-line ${item.type}`;
+                    codeLine.textContent = item.line;
+                    content.appendChild(codeLine);
+                });
+                
+                // Assemble the container
+                container.appendChild(lineNumbers);
+                container.appendChild(content);
+                
+                diffContainer.appendChild(container);
+            }
+            
+            // Function to expand all sections
+            function expandAll() {
+                // This would normally toggle expanded sections
+                // For this demo, just notify that all sections are already expanded
+                alert('All sections are already expanded.');
+            }
+            
+            // Function to toggle unchanged lines
+            function toggleUnchanged() {
+                const unchanged = document.querySelectorAll('.code-line.unchanged, .line-number.unchanged');
+                const currentDisplay = unchanged[0] ? unchanged[0].style.display : '';
+                
+                unchanged.forEach(el => {
+                    el.style.display = currentDisplay === 'none' ? '' : 'none';
+                });
+                
+                // Update button text
+                collapseUnchangedBtn.textContent = currentDisplay === 'none' ? 'Hide Unchanged' : 'Show Unchanged';
+            }
+        });
+    </script>
+</body>
+</html>

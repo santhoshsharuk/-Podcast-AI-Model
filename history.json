@@ -1,0 +1,23 @@
+[
+    {
+        "filename": "podcast_1756432021.mp3",
+        "topic": "ai game",
+        "duration": "1",
+        "creation_date": "2025-08-29T07:17:06.493194",
+        "script": "Host: Welcome to 'Game On', where we dive deep into the tech shaping our virtual worlds. Today, we're talking about AI in games with our resident expert, Dr. Anya Sharma. Anya, what exactly does \"AI game\" mean to the average player?\r\n\r\nExpert: Host, it's more than just fancy graphics! AI in games refers to the algorithms that control non-player characters, or NPCs. It dictates their behaviors, from a simple enemy patrol route to complex tactical decisions by a strategic opponent.\r\n\r\nHost: So, it's about making the game world feel alive and challenging. How has AI evolved in recent years? Are we seeing more sophisticated opponents?\r\n\r\nExpert: Absolutely. Modern AI uses machine learning to adapt to player styles, making opponents far less predictable. Think about grand strategy games or advanced bot opponents in competitive titles \u2013 they're learning and reacting in real-time.\r\n\r\nHost: That sounds like a game-changer, literally! Thanks, Anya."
+    },
+    {
+        "filename": "podcast_1756431891.mp3",
+        "topic": "ai",
+        "duration": "1",
+        "creation_date": "2025-08-29T07:14:57.585265",
+        "script": "Host: Welcome to \"Tech Talk Tonight\"! Today, we're diving into the fascinating world of Artificial Intelligence. Joining us is Dr. Anya Sharma, our AI expert. Anya, it feels like AI is everywhere now. What exactly are we talking about when we say AI?\r\nExpert: Thanks for having me. At its core, AI refers to machines designed to simulate human intelligence. This includes learning, problem-solving, perception, and decision-making. It\u2019s not just robots from sci-fi; it's the algorithms behind your streaming recommendations and voice assistants.\r\nHost: So, it's more integrated into our daily lives than many realize. But what's the biggest misconception people have about AI, or its potential future impact?\r\nExpert: Many still envision a dystopian future. While ethical considerations are crucial, the immediate impact is largely positive \u2013 automating tedious tasks, revolutionizing medicine, and powering personalized experiences. The future is about augmentation, not replacement.\r\nHost: That's a powerful distinction. So, AI is truly shaping our present and future in ways we're only just beginning to grasp. Thank you, Anya, for shedding light on this crucial topic!"
+    },
+    {
+        "filename": "podcast_1756431828.mp3",
+        "topic": "ai",
+        "duration": "1",
+        "creation_date": "2025-08-29T07:13:56.163334",
+        "script": "Host: Welcome back to \"Future Forward\"! Today, we're diving into a topic dominating headlines: Artificial Intelligence. Our expert, Dr. Lena Khan, is here to demystify it for us. Lena, what exactly is AI?\r\nExpert: Great to be here! At its core, AI refers to machines mimicking human intelligence. Think problem-solving, learning, and understanding language. It\u2019s about creating systems that can perform tasks traditionally requiring human thought.\r\nHost: So, it's more than just fancy algorithms? How is AI impacting our daily lives right now?\r\nExpert: Absolutely. From the personalized recommendations you get online to the voice assistants in your home, AI is pervasive. Self-driving cars and medical diagnostics are also rapidly advancing, promising significant societal shifts.\r\nHost: Incredible how quickly it's evolving. It sounds like AI isn't just a futuristic concept, but a present reality shaping our world in profound ways. Thank you, Dr. Khan, for that insightful overview.\r\nExpert: My pleasure."
+    }
+]
